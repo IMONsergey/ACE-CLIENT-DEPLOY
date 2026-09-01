@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Трансграничная торговля в интересах наших участников. Товары. Мосты. Индикаторы.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Международная ассоциация товарных и фьючерсных бирж">
+  <meta property="og:description" content="Трансграничная торговля в интересах наших участников. Товары. Мосты. Индикаторы.">
+  <meta property="og:image" content="https://imonsergey.github.io/ACE-CLIENT-DEPLOY/assets/images/meta/social-preview.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Международная ассоциация товарных и фьючерсных бирж">
+  <meta name="twitter:description" content="Трансграничная торговля в интересах наших участников. Товары. Мосты. Индикаторы.">
+  <meta name="twitter:image" content="https://imonsergey.github.io/ACE-CLIENT-DEPLOY/assets/images/meta/social-preview.jpg">
+  <title>Bids &amp; Offers</title>
+  <link rel="stylesheet" href="../assets/css/fonts.css">
+  <link rel="icon" href="../assets/images/meta/favicon.ico" sizes="80x80">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="bo-app" data-view="login">
+    <header class="bo-header">
+      <a class="bo-brand" href="../" aria-label="На главную">
+        <img class="bo-brand__full" src="assets/images/logo-bids-offers.svg" alt="">
+      </a>
+
+      <div class="bo-header__actions">
+        <div class="bo-language" role="group" aria-label="Language">
+          <span>RU</span>
+          <span class="bo-language__line">|</span>
+          <span class="bo-language__muted">EN</span>
+        </div>
+        <a class="bo-outline bo-auth-only" href="../">
+          <img src="assets/images/icon-back.svg" alt="">
+          <span>На главную</span>
+        </a>
+        <a class="bo-outline bo-session-only" href="../">
+          <img src="assets/images/icon-back.svg" alt="">
+          <span>На главную</span>
+        </a>
+        <button class="bo-small-primary bo-session-only" type="button" data-view-target="login">Выйти</button>
+      </div>
+    </header>
+
+    <section class="bo-view bo-auth-view" data-view-panel="login" aria-label="Bids &amp; Offers — вход">
+      <div class="bo-auth-card" data-auth-card data-auth-mode="login">
+        <div class="bo-auth-card__head">
+          <h1 id="login-title">Bids &amp; Offers</h1>
+          <div class="bo-tabs">
+            <button class="bo-tab is-active" type="button" data-auth-target="login">Вход</button>
+            <button class="bo-tab" type="button" data-auth-target="register">Регистрация</button>
+          </div>
+        </div>
+
+        <div class="bo-auth-stage" data-auth-stage>
+          <form class="bo-auth-form bo-auth-pane is-active" data-auth-pane="login" data-next-view="requests" novalidate autocomplete="off">
+            <label class="bo-field">
+              <span>E-mail</span>
+              <input id="login-email" name="email" type="email" placeholder="Введите e-mail" autocomplete="off" required aria-describedby="login-email-error" data-error-required="Введите e-mail" data-error-email="Введите корректный e-mail">
+              <span class="bo-field__error" id="login-email-error" aria-live="polite" hidden></span>
+            </label>
+            <label class="bo-field">
+              <span>Пароль</span>
+              <input id="login-password" name="password" type="password" placeholder="Введите пароль" autocomplete="current-password" required minlength="6" aria-describedby="login-password-error" data-error-required="Введите пароль" data-error-minlength="Минимум 6 символов">
+              <span class="bo-field__error" id="login-password-error" aria-live="polite" hidden></span>
+            </label>
+            <button class="bo-link-button" type="button" data-view-target="forgot"><span>Забыли пароль?</span> <span class="bo-inline-link">Восстановить</span></button>
+            <button class="bo-primary" type="submit">Войти</button>
+            <button class="bo-link-button bo-auth-switch" type="button" data-auth-target="register"><span>Нет аккаунта?</span> <span class="bo-inline-link">Зарегистрироваться</span></button>
+          </form>
+
+          <form class="bo-auth-form bo-auth-pane" data-auth-pane="register" data-next-view="confirm" novalidate autocomplete="off" aria-hidden="true" hidden>
+            <label class="bo-field">
+              <span>E-mail*</span>
+              <input id="register-email" name="email" type="email" placeholder="Введите e-mail" autocomplete="off" required aria-describedby="register-email-error" data-error-required="Введите e-mail" data-error-email="Введите корректный e-mail">
+              <span class="bo-field__error" id="register-email-error" aria-live="polite" hidden></span>
+            </label>
+            <label class="bo-field">
+              <span>Пароль*</span>
+              <input id="register-password" name="password" type="password" placeholder="Введите пароль" autocomplete="new-password" required minlength="6" aria-describedby="register-password-error" data-error-required="Введите пароль" data-error-minlength="Минимум 6 символов">
+              <span class="bo-field__error" id="register-password-error" aria-live="polite" hidden></span>
+            </label>
+            <label class="bo-field">
+              <span>Подтвердить пароль*</span>
+              <input id="register-password-confirm" name="password_confirm" type="password" placeholder="Введите пароль" autocomplete="new-password" required minlength="6" aria-describedby="register-password-confirm-error" data-match="password" data-error-required="Введите пароль" data-error-minlength="Минимум 6 символов" data-error-match="Пароли должны совпадать">
+              <span class="bo-field__error" id="register-password-confirm-error" aria-live="polite" hidden></span>
+            </label>
+            <button class="bo-primary" type="submit">Зарегистрироваться</button>
+            <button class="bo-link-button bo-auth-switch" type="button" data-auth-target="login"><span>Уже зарегистрированы?</span> <span class="bo-inline-link">Войти</span></button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="bo-view bo-auth-view" data-view-panel="confirm" aria-labelledby="confirm-title">
+      <div class="bo-message-card">
+        <h1 id="confirm-title">Подтверждение email</h1>
+        <p>Подтвердите ваш адрес электронной почты, нажав на ссылку, которую мы отправили на <span class="bo-email-accent" data-confirm-email>test@test.ru</span></p>
+        <button class="bo-primary" type="button" data-view-target="requests">Продолжить</button>
+      </div>
+    </section>
+
+    <section class="bo-view bo-auth-view" data-view-panel="forgot" aria-label="Восстановить пароль — запрос">
+      <div class="bo-message-card bo-message-card--wide">
+        <h1 id="forgot-title">Восстановить пароль</h1>
+        <p>На вашу электронную почту будет отправлена ссылка для сброса пароля. Если вы не получите письмо в течение нескольких минут, пожалуйста, повторите попытку.</p>
+        <form class="bo-auth-form" data-next-view="reset" novalidate autocomplete="off">
+          <label class="bo-field">
+            <span>E-mail</span>
+            <input id="forgot-email" name="email" type="email" placeholder="Введите e-mail" autocomplete="off" required aria-describedby="forgot-email-error" data-error-required="Введите e-mail" data-error-email="Введите корректный e-mail">
+            <span class="bo-field__error" id="forgot-email-error" aria-live="polite" hidden></span>
+          </label>
+          <div class="bo-auth-actions">
+            <button class="bo-primary" type="submit">Подтвердить</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="bo-view bo-auth-view" data-view-panel="reset" aria-label="Восстановить пароль — подтверждение">
+      <div class="bo-message-card">
+        <h1 id="reset-title">Восстановить пароль</h1>
+        <p>На вашу электронную почту <span class="bo-email-accent" data-reset-email>test@test.ru</span> отправлена ссылка для сброса пароля. Если вы не получите письмо в течение нескольких минут, пожалуйста, повторите попытку.</p>
+        <button class="bo-primary" type="button" data-view-target="login">Войти</button>
+      </div>
+    </section>
+
+    <section class="bo-view bo-requests-view" data-view-panel="requests" aria-label="Bids &amp; Offers — заявки">
+      <div class="bo-page-title">
+        <div>
+          <h1 id="requests-title">Bids &amp; Offers</h1>
+          <p>Сервис Bids &amp; Offers помогает участникам ассоциации размещать заявки на покупку и продажу биржевых товаров, находить встречные предложения и быстро переходить к деталям сделки.</p>
+        </div>
+        <button class="bo-add-button" type="button" data-view-target="form">
+          <span>+</span>
+          <span>Подать заявку</span>
+        </button>
+      </div>
+
+      <form class="bo-filters" data-filters aria-label="Фильтры" aria-controls="requests-table">
+        <button type="submit" hidden>Фильтры</button>
+        <label>
+          <span>ТИП</span>
+          <select name="type">
+            <option value="">Все</option>
+            <option value="Продажа">Продажа</option>
+            <option value="Покупка">Покупка</option>
+          </select>
+        </label>
+        <label>
+          <span>УЧАСТНИК</span>
+          <input name="participant" type="search" placeholder="Поиск участника..." autocomplete="off">
+        </label>
+        <label>
+          <span>ТОВАР</span>
+          <input name="product" type="search" placeholder="Поиск товара..." autocomplete="off">
+        </label>
+        <label>
+          <span>УСЛОВИЯ ПОСТАВКИ</span>
+          <input name="delivery" type="search" placeholder="Поиск условий..." autocomplete="off">
+        </label>
+        <label>
+          <span>СТАТУС</span>
+          <select name="status">
+            <option value="">Все</option>
+            <option value="Активна">Активна</option>
+            <option value="Исполнена">Исполнена</option>
+            <option value="Отменена">Отменена</option>
+          </select>
+        </label>
+      </form>
+
+      <section class="bo-table-card" aria-label="Заявки">
+        <div class="bo-table-wrap">
+          <table class="bo-table" id="requests-table">
+            <colgroup>
+              <col class="bo-col-date">
+              <col class="bo-col-type">
+              <col class="bo-col-participant">
+              <col class="bo-col-product">
+              <col class="bo-col-volume">
+              <col class="bo-col-price">
+              <col class="bo-col-delivery">
+              <col class="bo-col-status">
+            </colgroup>
+            <thead>
+              <tr>
+                <th data-sort-state="none"><button class="bo-th-control" type="button" data-sort-key="date"><span>ДАТА ЗАЯВКИ</span><i class="bo-sort-icon" aria-hidden="true"></i></button></th>
+                <th class="bo-th-filter"><button class="bo-th-control" type="button" data-column-filter="type"><span>ТИП</span><i class="bo-filter-icon" aria-hidden="true"></i></button><div class="bo-column-menu" data-column-menu="type" hidden><button type="button" data-column-filter-value="">Все</button><button type="button" data-column-filter-value="Продажа">Продажа</button><button type="button" data-column-filter-value="Покупка">Покупка</button></div></th>
+                <th><span>УЧАСТНИК</span></th>
+                <th><span>ТОВАР</span></th>
+                <th data-sort-state="none"><button class="bo-th-control" type="button" data-sort-key="volume"><span>ОБЪЁМ</span><i class="bo-sort-icon" aria-hidden="true"></i></button></th>
+                <th data-sort-state="none"><button class="bo-th-control" type="button" data-sort-key="price"><span>ЦЕНА И УСЛОВИЯ</span><i class="bo-sort-icon" aria-hidden="true"></i></button></th>
+                <th><span>УСЛОВИЯ ПОСТАВКИ</span></th>
+                <th class="bo-th-filter"><button class="bo-th-control" type="button" data-column-filter="status"><span>СТАТУС</span><i class="bo-filter-icon" aria-hidden="true"></i></button><div class="bo-column-menu" data-column-menu="status" hidden><button type="button" data-column-filter-value="">Все</button><button type="button" data-column-filter-value="Активна">Активна</button><button type="button" data-column-filter-value="Исполнена">Исполнена</button><button type="button" data-column-filter-value="Отменена">Отменена</button></div></th>
+              </tr>
+            </thead>
+            <tbody data-requests-body></tbody>
+          </table>
+        </div>
+      </section>
+
+    </section>
+
+    <section class="bo-view bo-form-view" data-view-panel="form" aria-labelledby="form-title">
+      <div class="bo-form-head">
+        <h1 id="form-title">Новая заявка</h1>
+        <button class="bo-secondary" type="button" data-view-target="requests">Отменить</button>
+      </div>
+
+      <form class="bo-form-card" data-request-form data-next-view="requests" novalidate autocomplete="off">
+        <section class="bo-form-section">
+          <h2>Основные параметры</h2>
+          <div class="bo-form-grid">
+            <div class="bo-field">
+              <label for="request-date">Дата заявки <b>*</b></label>
+              <span class="bo-date-field" data-date-field>
+                <span class="bo-input-shell"><input id="request-date" name="date" type="text" placeholder="дд.мм.гггг" inputmode="numeric" autocomplete="off" required pattern="\d{2}\.\d{2}\.\d{4}" aria-describedby="request-date-error" data-date-input data-error-required="Укажите дату в формате дд.мм.гггг" data-error-pattern="Укажите дату в формате дд.мм.гггг"><button class="bo-date-toggle" type="button" data-date-toggle aria-label="Открыть календарь"><img src="assets/images/icon-calendar.svg" alt=""></button></span>
+                <span class="bo-date-picker" data-date-picker hidden></span>
+              </span>
+              <span class="bo-field__error" id="request-date-error" aria-live="polite" hidden></span>
+            </div>
+            <label class="bo-field">
+              <span>Тип заявки <b>*</b></span>
+              <select id="request-type" name="type" required aria-describedby="request-type-error" data-error-required="Выберите тип заявки">
+                <option value="" disabled selected>Выберите тип заявки</option>
+                <option value="Покупка">Покупка</option>
+                <option value="Продажа">Продажа</option>
+              </select>
+              <span class="bo-field__error" id="request-type-error" aria-live="polite" hidden></span>
+            </label>
+            <label class="bo-field">
+              <span>Участник (Биржа-участник) <b>*</b></span>
+              <input id="request-participant" name="participant" type="text" placeholder="Название биржи-участника" autocomplete="off" required maxlength="80" aria-describedby="request-participant-error" data-error-required="Укажите биржу-участника">
+              <span class="bo-field__error" id="request-participant-error" aria-live="polite" hidden></span>
+            </label>
+            <label class="bo-field">
+              <span>Статус заявки <b>*</b></span>
+              <select id="request-status" name="status" required aria-describedby="request-status-error" data-error-required="Выберите статус заявки">
+                <option value="" disabled selected>Выберите статус заявки</option>
+                <option value="Активна">Активна</option>
+                <option value="Исполнена">Исполнена</option>
+                <option value="Отменена">Отменена</option>
+              </select>
+              <span class="bo-field__error" id="request-status-error" aria-live="polite" hidden></span>
+            </label>
+          </div>
+        </section>
+
+        <section class="bo-form-section">
+          <h2>Спецификация товара и объемы</h2>
+          <label class="bo-field">
+            <span>Товар <b>*</b></span>
+            <textarea id="request-product" name="product" placeholder="Описание товара в произвольном формате" required maxlength="260" aria-describedby="request-product-error" data-error-required="Опишите товар"></textarea>
+            <span class="bo-field__error" id="request-product-error" aria-live="polite" hidden></span>
+          </label>
+          <div class="bo-form-grid">
+            <label class="bo-field">
+              <span>Объём</span>
+              <input name="volume" type="text" placeholder="Например: 1000 тонн, мин. партия 100 тонн" maxlength="100">
+            </label>
+            <label class="bo-field">
+              <span>Цена и условия оплаты</span>
+              <input name="price" type="text" placeholder="Цена за единицу, валюта, условия оплаты" maxlength="220">
+            </label>
+          </div>
+        </section>
+
+        <section class="bo-form-section">
+          <h2>Логистика и доставка</h2>
+          <label class="bo-field">
+            <span>Условия поставки</span>
+            <input name="delivery" type="text" placeholder="Бизнес поставки, способ доставки" maxlength="160">
+          </label>
+        </section>
+
+        <div class="bo-form-actions">
+          <button class="bo-primary" type="submit">Опубликовать заявку</button>
+          <button class="bo-secondary" type="button" data-view-target="requests">Отменить</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="bo-success-modal" data-success-modal hidden role="dialog" aria-modal="true" aria-labelledby="success-title">
+      <button class="bo-success-modal__backdrop" type="button" data-close-success aria-label="Закрыть"></button>
+      <div class="bo-success-card">
+        <div class="bo-success-card__head">
+          <h2 id="success-title">Заявка сохранена</h2>
+          <button class="bo-icon-button bo-success-card__close" type="button" data-close-success aria-label="Закрыть">
+            <img src="assets/images/icon-close.svg" alt="">
+          </button>
+        </div>
+        <p>Заявка добавлена в список и доступна в текущей демо-сессии</p>
+        <button class="bo-primary" type="button" data-close-success>Закрыть</button>
+      </div>
+    </div>
+  </main>
+
+  <aside class="bo-drawer" hidden aria-hidden="true" aria-labelledby="drawer-title">
+    <div class="bo-drawer__head">
+      <p><span>Заявка от:</span> <b data-drawer-date></b></p>
+      <button class="bo-icon-button" type="button" data-close-drawer aria-label="Закрыть">
+        <img src="assets/images/icon-close.svg" alt="">
+      </button>
+    </div>
+    <h2 id="drawer-title" data-drawer-product>Заявка</h2>
+    <div class="bo-drawer__meta">
+      <p><span>ТИП:</span> <strong class="bo-type" data-drawer-type></strong></p>
+      <span class="bo-status" data-drawer-status></span>
+    </div>
+    <div class="bo-drawer__participant">
+      <div>
+        <span>Участник</span>
+        <p><img data-drawer-flag src="assets/images/russia-flag.png" alt=""><b data-drawer-participant></b></p>
+      </div>
+      <img class="bo-drawer__exchange" data-drawer-logo src="assets/images/spimex-logo.png" alt="">
+    </div>
+    <dl class="bo-drawer__details">
+      <div>
+        <dt>ОБЪЁМ</dt>
+        <dd data-drawer-volume></dd>
+      </div>
+      <div>
+        <dt>Условия поставки</dt>
+        <dd data-drawer-delivery></dd>
+      </div>
+      <div>
+        <dt>ЦЕНА И УСЛОВИЯ</dt>
+        <dd data-drawer-price></dd>
+      </div>
+    </dl>
+    <div class="bo-drawer__actions">
+      <button class="bo-primary" type="button">Откликнуться на заявку</button>
+      <button class="bo-secondary" type="button" data-close-drawer>Закрыть</button>
+    </div>
+  </aside>
+  <button class="bo-drawer-backdrop" hidden type="button" data-close-drawer aria-label="Закрыть"></button>
+
+  <script src="script.js"></script>
+</body>
+</html>

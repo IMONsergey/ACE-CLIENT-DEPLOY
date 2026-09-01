@@ -1,0 +1,196 @@
+/* ==========================================================================
+   Reveal and interaction motion
+   ========================================================================== */
+
+/* Short staggered entrances share the interaction timing used by Bids & Offers. */
+.motion-ready .motion-reveal {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 420ms var(--motion-ease),
+    transform 620ms var(--motion-ease-soft);
+  transition-delay: var(--motion-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.motion-ready .motion-reveal.motion-reveal--short {
+  transform: translate3d(0, 7px, 0);
+}
+
+/* Scale reveals remain shallow so framed layouts keep their geometry. */
+.motion-ready .motion-reveal.motion-reveal--scale {
+  transform: translate3d(0, 10px, 0) scale(.988);
+}
+
+.motion-ready .motion-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+/* Word reveals retain editorial rhythm without holding the page in transition. */
+.motion-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.motion-word__inner {
+  display: inline-block;
+  transform: translate3d(0, .38em, 0);
+  opacity: 0;
+  transition:
+    transform 620ms var(--motion-ease-soft),
+    opacity 360ms var(--motion-ease);
+  transition-delay: var(--word-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.motion-words.is-visible .motion-word__inner {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  will-change: auto;
+}
+
+/* Header intro assembles almost imperceptibly. */
+.motion-ready .site-header .brand,
+.motion-ready .site-header .site-nav a,
+.motion-ready .site-header .site-language,
+.motion-ready .site-header .header-request,
+.motion-ready .site-header .menu-toggle {
+  opacity: 0;
+  transform: translate3d(0, -4px, 0);
+  transition:
+    opacity 360ms var(--motion-ease),
+    transform 520ms var(--motion-ease-soft);
+}
+
+.motion-ready.motion-intro-visible .site-header .brand,
+.motion-ready.motion-intro-visible .site-header .site-nav a,
+.motion-ready.motion-intro-visible .site-header .site-language,
+.motion-ready.motion-intro-visible .site-header .header-request,
+.motion-ready.motion-intro-visible .site-header .menu-toggle {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.motion-ready.motion-intro-visible .site-header .brand { transition-delay: 60ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(1) { transition-delay: 100ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(2) { transition-delay: 122ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(3) { transition-delay: 144ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(4) { transition-delay: 166ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(5) { transition-delay: 188ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(6) { transition-delay: 210ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(7) { transition-delay: 232ms; }
+.motion-ready.motion-intro-visible .site-header .site-nav a:nth-child(8) { transition-delay: 254ms; }
+.motion-ready.motion-intro-visible .site-header .site-language { transition-delay: 205ms; }
+.motion-ready.motion-intro-visible .site-header .header-request { transition-delay: 210ms; }
+.motion-ready.motion-intro-visible .site-header .menu-toggle { transition-delay: 230ms; }
+
+/* Hero globe enters as one calm object; its native globe motion remains untouched. */
+.motion-ready .hero__visual.motion-reveal {
+  transform: translate3d(10px, 8px, 0) scale(.985);
+  transition:
+    opacity 460ms var(--motion-ease),
+    transform 760ms var(--motion-ease-soft);
+}
+
+.motion-ready .hero__visual.motion-reveal.is-visible {
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* The mosaic fades as one unit so its shared one-pixel seams never separate. */
+.motion-ready .association-mosaic.motion-reveal,
+.motion-ready .association-mosaic.motion-reveal.is-visible {
+  transform: none;
+}
+
+.header-request,
+.hero__request,
+.bids-promo__link,
+.site-nav__request {
+  opacity: 1 !important;
+  transition:
+    background-color 220ms var(--motion-ease),
+    border-color 220ms var(--motion-ease),
+    color 220ms var(--motion-ease),
+    opacity 220ms var(--motion-ease) !important;
+}
+
+.header-request,
+.hero__request,
+.site-nav__request {
+  color: #fff;
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.header-request:hover,
+.header-request:focus-visible,
+.hero__request:hover,
+.hero__request:focus-visible,
+.site-nav__request:hover,
+.site-nav__request:focus-visible {
+  color: #fff;
+  background: #006f81;
+  border-color: #006f81;
+  opacity: 1 !important;
+}
+
+.bids-promo__link:hover,
+.bids-promo__link:focus-visible {
+  color: #004f5c;
+  background: #eafcff;
+  opacity: 1 !important;
+}
+
+.header-request:active,
+.hero__request:active,
+.site-nav__request:active {
+  color: #fff;
+  background: #005d6a;
+  border-color: #005d6a;
+}
+
+.bids-promo__link:active {
+  color: #003f49;
+  background: #d6f7fb;
+}
+
+/* Micro-interactions: short distance, slow finish. */
+.header-request .icon-arrow,
+.hero__request .icon-arrow,
+.bids-promo__link .icon-arrow,
+.site-nav__request .icon-arrow,
+.association-mosaic__nav-arrow {
+  transition: transform 280ms var(--motion-ease-soft);
+}
+
+.header-request:hover .icon-arrow,
+.header-request:focus-visible .icon-arrow,
+.hero__request:hover .icon-arrow,
+.hero__request:focus-visible .icon-arrow,
+.bids-promo__link:hover .icon-arrow,
+.bids-promo__link:focus-visible .icon-arrow,
+.site-nav__request:hover .icon-arrow,
+.site-nav__request:focus-visible .icon-arrow {
+  transform: translate3d(2px, 0, 0);
+}
+
+.association-mosaic__nav-card:hover .association-mosaic__nav-arrow {
+  transform: translate3d(0, 2px, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-ready .motion-reveal,
+  .motion-word__inner,
+  .motion-ready .site-header .brand,
+  .motion-ready .site-header .site-nav a,
+  .motion-ready .site-header .site-language,
+  .motion-ready .site-header .header-request,
+  .motion-ready .site-header .menu-toggle {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
