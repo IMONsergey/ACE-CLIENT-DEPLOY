@@ -1,0 +1,16 @@
+/* Isolated handoff preview. This file is never loaded by the homepage. */
+.news-preview { min-height: 100vh; background: #0d3446; }
+@media (min-width: 901px) {
+  .news-preview .news-section { padding: 94px 0 100px; }
+  .news-preview .news-section__inner { width: calc(100% - 160px); max-width: 1280px; }
+  .news-preview .news-section__header h2 { font-size: 63px; line-height: 76px; }
+  .news-preview .news-section__controls { gap: 16px; }
+  .news-preview .news-section__control { width: 48px; height: 48px; }
+  .news-preview .news-section__track { gap: 16px; margin-top: 44px; }
+  .news-preview .news-card { flex-basis: calc((100% - 32px) / 3); height: 546px; border-radius: 8px; }
+  .news-preview .news-card__image { height: 220px; }
+  .news-preview .news-card__body { padding: 28px; }
+  .news-preview .news-card time { font-size: 15px; line-height: 24px; font-weight: 500; }
+  .news-preview .news-card h3 { margin-top: 24px; font-size: 26px; line-height: 33px; }
+  .news-preview .news-card__link { font-size: 17px; line-height: 24px; }
+}

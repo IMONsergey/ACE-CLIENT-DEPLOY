@@ -1,0 +1,39 @@
+{
+  "article": "spief-2025",
+  "articleSource": "https://spimex.com/press_centre/news/50409/",
+  "photoSource": "https://www.butb.by/news/2025/butb-primet-uchastie-v-sozdanii-novogo-mezhdunarodnogo-birzhevogo-obedineniya-/",
+  "images": [
+    {
+      "file": "assets/images/news/article/spief-2025-documents.jpg",
+      "role": "cover",
+      "width": 3000,
+      "height": 2000,
+      "sha256": "163f24c878e5277f70d199bed96fead3ca66c984ca4156def6f97880b37ea8d1",
+      "source": "https://www.butb.by/upload/medialibrary/20c/uuaj2ugoyawm31k7hvskibiu3d4clkyj/AT_27592.jpg"
+    },
+    {
+      "file": "assets/images/news/article/spief-2025-signing.jpg",
+      "role": "inline",
+      "width": 3000,
+      "height": 2000,
+      "sha256": "c603b30abc2e39f4d0aa63610070cb20ef180ec993b49851b9e9dcc2d3271818",
+      "source": "https://www.butb.by/upload/medialibrary/ca3/i61hfb3mx8y2ncr3xoint6skocf003r2/AT_27392.jpg"
+    },
+    {
+      "file": "assets/images/news/article/close.svg",
+      "role": "close icon",
+      "width": 24,
+      "height": 24,
+      "sha256": "d14d21955aefe5783aeeb9b3e6d9d09645299383452e4535d253c3bba1b1514d",
+      "source": "Figma Ya1g999mQznIQYmhI3rU1l node48:95"
+    },
+    {
+      "file": "assets/images/news/article/external-link.svg",
+      "role": "source icon",
+      "width": 24,
+      "height": 24,
+      "sha256": "82ca70fcd7e92fa79e5ad7f5b6710bafcf744bda596e084e760ff01778173463",
+      "source": "Figma Ya1g999mQznIQYmhI3rU1l node48:94"
+    }
+  ]
+}

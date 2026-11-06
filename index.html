@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/motion.css">
+  <link rel="stylesheet" href="assets/css/news-dialog.css">
 </head>
 <body>
   <div class="preloader" id="site-preloader" role="status" aria-live="polite" aria-label="Загрузка сайта">
@@ -696,10 +697,10 @@
               <div class="news-card__body">
                 <time datetime="2026-07-21">21.07.2026</time>
                 <h3>Ассоциация товарных и фьючерсных бирж приступила к разработке глобальной стратегии международной торговли</h3>
-                <button class="news-card__link" type="button" disabled>
+                <a class="news-card__link" href="https://spimex.global/about/news/1942/" target="_blank" rel="noopener noreferrer">
                   <span>Читать</span>
                   <svg class="icon-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                </button>
+                </a>
               </div>
             </article>
 
@@ -708,22 +709,22 @@
               <div class="news-card__body">
                 <time datetime="2025-11-25">25.11.2025</time>
                 <h3>От деклараций к действиям: Международная ассоциация товарных и фьючерсных бирж начнет работу до конца 2025 года</h3>
-                <button class="news-card__link" type="button" disabled>
+                <a class="news-card__link" href="https://spimex.global/about/news/1943/" target="_blank" rel="noopener noreferrer">
                   <span>Читать</span>
                   <svg class="icon-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                </button>
+                </a>
               </div>
             </article>
 
-            <article class="news-card" data-slider-slide>
-              <img class="news-card__image" src="assets/images/news/pmief-agreement.png" alt="" width="834" height="440" loading="lazy">
+            <article class="news-card" data-slider-slide data-news-card>
+              <img class="news-card__image" src="assets/images/news/article/spief-2025-documents.jpg" alt="Подписание декларации на ПМЭФ-2025" width="3000" height="2000" loading="lazy">
               <div class="news-card__body">
                 <time datetime="2025-06-19">19.06.2025</time>
                 <h3>Товарные биржи договорились о создании Международной ассоциации товарных и фьючерсных бирж – ПМЭФ-2025</h3>
-                <button class="news-card__link" type="button" disabled>
+                <a class="news-card__link" href="https://spimex.com/press_centre/news/50409/" target="_blank" rel="noopener noreferrer" aria-haspopup="dialog" aria-controls="news-dialog" data-news-open="spief-2025">
                   <span>Читать</span>
                   <svg class="icon-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                </button>
+                </a>
               </div>
             </article>
           </div>
@@ -813,11 +814,56 @@
     </div>
   </main>
 
+  <dialog class="news-dialog" id="news-dialog" aria-labelledby="news-dialog-title" aria-modal="true" data-news-dialog>
+    <div class="news-dialog__scroll" tabindex="0" role="region" aria-label="Содержание новости" data-news-scroll>
+      <article class="news-article" data-news-article></article>
+    </div>
+    <button class="news-dialog__close" type="button" aria-label="Закрыть новость" data-news-close>
+      <img src="assets/images/news/article/close.svg" alt="" width="24" height="24">
+    </button>
+  </dialog>
+
+  <template id="news-spief-2025">
+        <div class="news-article__meta">
+          <time datetime="2025-06-19">19.06.2025</time>
+          <span class="news-article__category">ПМЭФ-2025</span>
+        </div>
+        <h2 class="news-article__title" id="news-dialog-title" tabindex="-1" data-news-title>Товарные биржи договорились <br class="news-article__title-break">о создании Международной ассоциации товарных и фьючерсных бирж – ПМЭФ-2025</h2>
+        <figure class="news-article__figure news-article__figure--cover">
+          <img src="assets/images/news/article/spief-2025-documents.jpg" alt="Представители бирж демонстрируют подписанные документы на ПМЭФ-2025" width="3000" height="2000" decoding="async">
+          <figcaption>Подписание декларации на ПМЭФ-2025. Фото: БУТБ</figcaption>
+        </figure>
+        <div class="news-article__body" data-news-body>
+          <p class="news-article__lead">На XXVIII Петербургском международном экономическом форуме 19 июня 2025 года подписана декларация о создании Международной ассоциации товарных и фьючерсных бирж.</p>
+          <p><strong>Намерение присоединиться к ассоциации выразили:</strong> Петербургская Биржа, Национальная товарно-деривативная биржа Индии (National Commodity and Derivatives Exchange Limited, NCDEX), Товарная биржа Ирана (Iran Mercantile Exchange, IME), Синьцзянский Азиатско-Европейский международный торговый центр (Xinjiang Asia-Europe International Material Trading Center, АЕЕХ, Китай), Белорусская универсальная товарная биржа (БУТБ), Товарная биржа «Евразийская Торговая Система» (АО ЕТС, Казахстан), Узбекская республиканская товарно-сырьевая биржа (УзРТСБ).</p>
+          <p>Декларация закрепляет намерения сторон создать ассоциацию, которая будет способствовать развитию взаимодействия между товарными и фьючерсными биржами стран ЕАЭС+, БРИКС+ и ШОС. Её деятельность будет направлена на координацию усилий по развитию организованных товарных рынков с учетом международных практик, расширение межбиржевого сотрудничества, включая трансграничную торговлю.</p>
+          <p>Ассоциация также будет содействовать реализации инициативы по созданию международного ценового агентства, призванного обеспечивать формирование объективной и независимой системы ценовых индикаторов на ключевые товарные группы.</p>
+          <figure class="news-article__figure news-article__figure--inline">
+            <img src="assets/images/news/article/spief-2025-signing.jpg" alt="Представители бирж подписывают декларацию о создании ассоциации на ПМЭФ-2025" width="3000" height="2000" loading="lazy" decoding="async">
+            <figcaption>Подписание декларации на ПМЭФ-2025. Фото: БУТБ</figcaption>
+          </figure>
+          <p><strong>Статс-секретарь – замминистра энергетики России Дмитрий Исламов:</strong> «Хотел бы от имени Минэнерго России поприветствовать подписание этой Декларации, выразить уверенность в том, что она будет всемерно способствовать развитию международной торговли энергоносителями, прежде всего углем. В качестве успешного примера развития торговых операций: за последние три года объемы угля на Петербургской Бирже выросли втрое. В целом работа ассоциации поднимет планку биржевой торговли на новый уровень».</p>
+          <p><strong>Президент Петербургской Биржи Игорь Артемьев:</strong> «Декларация о создании ассоциации – новый важный шаг в формировании международного биржевого пространства, межбиржевых мостов. Эти линки призваны объединить крупнейшие биржи и торговые площадки стран ЕАЭС+, ШОС, БРИКС. Объединение является полностью открытым для присоединения новых участников. Работа ассоциации важна с точки зрения глобальных изменений в мировой экономике в целом – мы формируем единое информационное пространство и единые ценовые индикаторы».</p>
+          <p><strong>Главный коммерческий директор Национальной товарно-деривативной биржи Индии Кедар Дешпанде:</strong> «Участие биржи NCDEX в инициативе по созданию международной ассоциации товарных и фьючерсных бирж является шагом к устойчивому и долгосрочному сотрудничеству. Являясь ведущей торговой площадкой Индии с богатым опытом в аграрном секторе и развитии биржевых инструментов, мы убеждены, что при поддержке наших регуляторов и интересе бизнес-сообществ с обеих сторон нам удастся реализовать ряд проектов, способных укрепить роль биржевого сектора в международной торговле».</p>
+          <p><strong>Председатель правления Синьцзянского Азиатско-Европейского международного торгового центра госпожа Чжан Хунпин:</strong> «Укрепление связей биржевых платформ европейских и азиатских стран, информационный обмен, вопросы таможенного оформления, финансовых расчетов, логистики способны обеспечить мировое лидерство в трансграничной торговле сырьевыми товарами».</p>
+          <p><strong>Председатель правления Белорусской универсальной товарной биржи Александр Осмоловский:</strong> «Эффективность работы реального сектора экономики и реализация экспортного потенциала белорусских предприятий всегда имели приоритетное значение для БУТБ. Поэтому подписание меморандума – это, прежде всего, новые возможности для участников биржевых торгов из Республики Беларусь. Устранение торговых барьеров, упрощенный доступ к перспективным рынкам, расширение круга деловых партнеров, дополнительные торговые и маркетинговые инструменты – вот что получат наши клиенты благодаря созданию нового межбиржевого объединения, которым планируется охватить страны ЕАЭС+, ШОС и БРИКС+. Иными словами, для нас это не просто декларация о намерениях, а стратегическое решение, направленное на достижение конкретных результатов, главными бенефициарами которых станут белорусские субъекты хозяйствования».</p>
+          <p><strong>Председатель правления АО «Товарная биржа «Евразийская Торговая Система» Курмет Оразаев:</strong> «Казахстан, являясь экспортно ориентированной страной, придает большое значение выстраиванию эффективного взаимодействия с организаторами торговли физическими товарами. Это особенно важно, поскольку балансы как глобальных, так и региональных рынков зависят от казахстанской продукции — в первую очередь сельскохозяйственной, зерновых культур и нефтепродуктов. Как и многие страны в регионе, мы в Казахстане, как товарная биржа, стремимся расширять географию поставок и развивать торгово-экономические связи со странами дальнего зарубежья с целью выстраивания общих рынков».</p>
+          <footer class="news-article__footer">
+            <a class="news-article__source" href="https://spimex.com/press_centre/news/50409/" target="_blank" rel="noopener noreferrer" data-news-source>
+              <span>Источник: Петербургская Биржа</span>
+              <img src="assets/images/news/article/external-link.svg" alt="" width="24" height="24">
+            </a>
+          </footer>
+        </div>
+  </template>
+
+
   <script src="assets/js/typograph.js"></script>
   <script src="assets/js/navigation.js"></script>
   <script src="assets/js/preloader.js"></script>
   <script src="assets/js/smooth-scroll.js"></script>
   <script src="assets/js/responsive-slider.js"></script>
+  <script src="assets/js/news-dialog.js"></script>
   <script src="assets/js/countries-map.js"></script>
   <script src="assets/js/contact-form.js"></script>
   <script src="assets/js/motion.js"></script>
