@@ -1,0 +1,80 @@
+{
+  "formatVersion": 1,
+  "reference": {
+    "filename": "desctop (1).png",
+    "width": 2048,
+    "height": 1302,
+    "sha256": "b07a311f575390ee0d2041f38f3e2822d1d30c28fe2a40ef4ddcb23f05b20776",
+    "receivedAt": "2026-11-07",
+    "source": "The client's complete desktop map screenshot supplied in the conversation; not the earlier cropped comments-document image."
+  },
+  "source": {
+    "path": "assets/images/countries/map.png",
+    "width": 2382,
+    "height": 1722,
+    "sha256": "dc0d0147cdbdaaca596cbd304121ba9892e35147b06052573211242a2ae77a91"
+  },
+  "registration": {
+    "measured": {
+      "scale": 0.948191021829,
+      "translateX": -92.515186018,
+      "translateY": 21.292147120
+    },
+    "rationalEquivalent": {
+      "scaleNumerator": 2048,
+      "scaleDenominator": 2160,
+      "translateX": -92.44444444444444,
+      "translateY": 21.333333333333332,
+      "note": "Implementation-friendly equivalent, within 0.1 reference pixel of the independently measured registration. This is documentation, not the expected-value source for the tests."
+    },
+    "method": "Independent coastline registration: 5198 alpha-edge points from the native map against directed image gradients, coarse-to-fine blur sigma 5, 2, 1, 0.6. All eight logo boxes and the legend area x < 420 were excluded. The measured transform was not fitted to logo coordinates or read from CSS.",
+    "equation": "referenceX = nativeX * scale + translateX; referenceY = nativeY * scale + translateY"
+  },
+  "logos": [
+    { "key": "spimex", "box": { "x": 642, "y": 303, "width": 126, "height": 35 } },
+    { "key": "butb", "box": { "x": 589, "y": 386, "width": 105, "height": 52 } },
+    { "key": "ets", "box": { "x": 1240, "y": 499, "width": 85, "height": 50 } },
+    { "key": "asia", "box": { "x": 1353, "y": 498, "width": 155, "height": 41 } },
+    { "key": "uzex", "box": { "x": 1054, "y": 543, "width": 128, "height": 49 } },
+    { "key": "irenex", "box": { "x": 930, "y": 636, "width": 107, "height": 53 } },
+    { "key": "ime", "box": { "x": 1015, "y": 694, "width": 111, "height": 38 } },
+    { "key": "emx", "box": { "x": 662, "y": 728, "width": 129, "height": 57 } }
+  ],
+  "landmarks": [
+    {
+      "name": "Northern detached island",
+      "sourceBox": { "x": 1260, "y": 91, "width": 99, "height": 22 },
+      "sourceCenter": { "x": 1309.5, "y": 102 },
+      "referenceBox": { "x": 1103, "y": 107, "width": 93, "height": 22 },
+      "referenceCenter": { "x": 1149.5, "y": 118 }
+    },
+    {
+      "name": "Caspian Sea",
+      "sourceBox": { "x": 1046, "y": 501, "width": 124, "height": 143 },
+      "sourceCenter": { "x": 1108, "y": 572.5 },
+      "referenceBox": { "x": 900, "y": 497, "width": 116, "height": 134 },
+      "referenceCenter": { "x": 958, "y": 564 }
+    },
+    {
+      "name": "Sri Lanka",
+      "sourceBox": { "x": 1598, "y": 1017, "width": 32, "height": 54 },
+      "sourceCenter": { "x": 1614, "y": 1044 },
+      "referenceBox": { "x": 1423, "y": 986, "width": 30, "height": 50 },
+      "referenceCenter": { "x": 1438, "y": 1011 }
+    }
+  ],
+  "measurementNotes": [
+    "Logo boxes are independently measured white-card pixel bounds in the supplied reference, not copied CSS percentages. Raster edge antialiasing contributes approximately one reference pixel of uncertainty.",
+    "Landmark centers are centers of independently measured component bounds, not centers predicted by the transform. Native thresholds: island alpha > 5 or 10; Caspian water alpha < 128. Reference local green thresholds: > 155 or > 105 for islands, < 135 for Caspian water; threshold sweeps of +/- 5 remain stable.",
+    "Two reference pixels plus 0.05 CSS px of layout quantization cover raster measurement and fractional browser layout. The tolerance scales with the complete reference width, never with an incorrectly sized map surface.",
+    "No maximum canvas width is assumed. At narrow desktop widths the section retains a 900 px minimum height; from 1440 px its complete design aspect ratio is also checked."
+  ],
+  "contract": {
+    "referenceTolerancePx": 2,
+    "layoutRoundingPx": 0.05,
+    "minimumSectionHeightPx": 900,
+    "exactSectionHeightFromWidthPx": 1440,
+    "fullWidthCanvas": true,
+    "desktopWidths": [901, 1024, 1440, 1920, 2048, 2560]
+  }
+}

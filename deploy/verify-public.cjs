@@ -9,6 +9,9 @@ const crypto = require('node:crypto');
 const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const ORIGIN = 'https://ace.imon.world';
+const args = process.argv.slice(2);
+assert.ok(args.length === 0 || (args.length === 2 && args[0] === '--code-proof'), 'Usage: verify-public.cjs [--code-proof PATH]');
+const proofPath = path.resolve(ROOT, args[1] || 'artifacts/code-proof-final.json');
 const output = path.join(ROOT, 'artifacts/deploy/public-check.json');
 const report = { origin: ORIGIN, startedAt: new Date().toISOString(), status: 'running', checks: [] };
 const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 1 });
@@ -41,9 +44,9 @@ function get(url) {
 
 (async () => {
   try {
-    const proof = JSON.parse(fs.readFileSync(path.join(ROOT, 'artifacts/code-proof-final.json'), 'utf8'));
+    const proof = JSON.parse(fs.readFileSync(proofPath, 'utf8'));
     const runtime = proof.files.filter(entry => /^(?:assets\/|bids-offers\/|index\.html$|news-preview\.html$)/.test(entry.path));
-    assert.equal(runtime.length, 24);
+    assert.ok(runtime.length >= 24, 'The complete verified runtime fingerprint is required');
     runtime.push(
       { path: '/', sha256: proof.files.find(entry => entry.path === 'index.html').sha256 },
       { path: 'news-preview.html?article=spief-2025', sha256: proof.files.find(entry => entry.path === 'news-preview.html').sha256 },

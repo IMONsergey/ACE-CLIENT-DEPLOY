@@ -7,6 +7,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
+const { readMapReference, assertMapReferenceGeometry } = require('../scripts/map-reference-contract.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const ORIGIN = 'https://ace.imon.world';
@@ -182,6 +183,61 @@ async function checkUI() {
   assert.deepEqual(report.unexpectedPopups, [], 'Unexpected navigation opened a new window');
   assert.deepEqual(report.blockedRequests, [], 'Unexpected external or non-static request');
   report.checks.push('No page errors, failed own resources, external requests, or unexpected popups');
+
+  // Validate the published URL against the same independently measured complete
+  // screenshot, not only against logo counts or surface-relative percentages.
+  const reference = readMapReference(ROOT);
+  report.mapReference = reference.proof;
+  const referenceViewport = { width: 2048, height: 1400 };
+  await page.setViewportSize(referenceViewport);
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => document.activeElement?.blur());
+  await map.evaluate(node => node.scrollIntoView({ block: 'start', behavior: 'auto' }));
+  for (const image of await map.locator('.countries-map__desktop img').all()) {
+    await image.evaluate(node => node.decode());
+  }
+  await settle(page);
+  report.mapGeometry = await map.evaluate(root => {
+    const rectangle = node => {
+      const box = node.getBoundingClientRect();
+      return { x: box.x, y: box.y, width: box.width, height: box.height, right: box.right, bottom: box.bottom };
+    };
+    const image = root.querySelector('.countries-map__map--desktop');
+    return {
+      section: rectangle(root), scene: rectangle(root.querySelector('[data-map-scene]')), map: rectangle(image),
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+      sourceImage: { src: image.currentSrc, loaded: image.complete && image.naturalWidth > 0,
+        naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight },
+      activeCountry: window.__AXE_COUNTRIES_MAP__?.getState().activeCountry,
+      logos: [...root.querySelectorAll('[data-map-logo]')].map(logo => ({
+        key: [...logo.classList].find(name => name.startsWith('countries-map__logo--')).slice('countries-map__logo--'.length),
+        country: logo.dataset.mapLogo, ...rectangle(logo), loaded: logo.complete && logo.naturalWidth > 0,
+        active: logo.classList.contains('is-active'),
+      })),
+    };
+  });
+  const geometry = report.mapGeometry;
+  assert.equal(geometry.activeCountry, null, 'Reference screenshot must have no hovered or focused country');
+  assert.ok(geometry.sourceImage.loaded, 'Published reference map image did not load');
+  assert.equal(geometry.sourceImage.src, ORIGIN + '/' + reference.fixture.source.path, 'Unexpected published map image');
+  assert.equal(geometry.sourceImage.naturalWidth, reference.fixture.source.width, 'Unexpected native map width');
+  assert.equal(geometry.sourceImage.naturalHeight, reference.fixture.source.height, 'Unexpected native map height');
+  assert.ok(geometry.logos.every(logo => logo.loaded && !logo.active), 'Reference logos must be loaded and inactive');
+  report.mapReferenceGeometry = assertMapReferenceGeometry(geometry, reference.fixture);
+  const referenceScreenshot = path.join(outputDir, 'countries-map-2048.png');
+  await map.screenshot({ path: referenceScreenshot, animations: 'disabled' });
+  report.screenshots.push(referenceScreenshot);
+  const screenshotBytes = fs.readFileSync(referenceScreenshot);
+  assert.equal(screenshotBytes.readUInt32BE(16), 2048, 'Reference screenshot must be 2048 px wide');
+  // The contract checks the 1302 px DOM section. A fractional section origin
+  // can make Playwright round the screenshot clip outward by one pixel.
+  const screenshotHeight = screenshotBytes.readUInt32BE(20);
+  assert.ok(screenshotHeight >= 1302 && screenshotHeight <= 1303, 'Reference screenshot must reveal the complete map section with at most one pixel of clip rounding');
+  assert.deepEqual(report.pageErrors, [], 'Page JavaScript errors after reference geometry check');
+  assert.deepEqual(report.ownResourceErrors, [], 'Failed own static resources after reference geometry check');
+  assert.deepEqual(report.unexpectedPopups, [], 'Unexpected navigation during reference geometry check');
+  assert.deepEqual(report.blockedRequests, [], 'Unexpected request during reference geometry check');
+  report.checks.push('Published 2048 px map matches independent scene, native image, eight logo boxes and coastline landmarks; complete map screenshot captured with at most one pixel of clip rounding');
 }
 
 (async () => {

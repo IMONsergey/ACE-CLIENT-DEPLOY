@@ -20,6 +20,7 @@ const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const http = require('node:http');
 const path = require('node:path');
+const { readMapReference, assertMapReferenceGeometry, selfTest: mapContractSelfTest } = require('./map-reference-contract.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const SELECTOR = Object.freeze({
@@ -37,19 +38,6 @@ const SELECTOR = Object.freeze({
   cards: '[data-map-country]'
 });
 
-// Measured against the map image, not the viewport or the section. The source
-// is the client's Design screenshot in the supplied comments document.
-const MAP_TARGET = Object.freeze({
-  spimex: { left: 32.529, top: 17.290, width: 5.605 },
-  butb: { left: 30.203, top: 22.366, width: 4.660 },
-  ets: { left: 59.044, top: 29.312, width: 3.778 },
-  asia: { left: 64.016, top: 29.226, width: 6.864 },
-  uzex: { left: 50.796, top: 32.013, width: 5.668 },
-  irenex: { left: 45.313, top: 37.643, width: 4.723 },
-  ime: { left: 49.094, top: 41.244, width: 4.912 },
-  emx: { left: 33.413, top: 43.332, width: 5.730 }
-});
-
 const PHOTO_HASHES = [
   '163f24c878e5277f70d199bed96fead3ca66c984ca4156def6f97880b37ea8d1',
   'c603b30abc2e39f4d0aa63610070cb20ef180ec993b49851b9e9dcc2d3271818'
@@ -60,7 +48,7 @@ const POPUP_VIEWPORTS = [
   { width: 390, height: 844 },
   { width: 320, height: 740 }
 ];
-const MAP_WIDTHS = [901, 1024, 1440, 1920];
+const MAP_WIDTHS = [901, 1024, 1440, 1920, 2048, 2560];
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8',
@@ -118,6 +106,7 @@ let localServer;
 let origin;
 let shuttingDown = false;
 let signalReceived;
+let mapReference;
 
 function invariant(condition, message, details) {
   if (condition) return;
@@ -217,12 +206,13 @@ async function waitForReady(page) {
   await settle(page);
 }
 
-async function screenshot(page, browserName, name, force = false) {
+async function screenshot(page, browserName, name, force = false, locator = null) {
   const enabled = force ? options.screenshots !== 'none' :
     options.screenshots === 'all' || (options.screenshots === 'chromium' && browserName === 'chromium');
   if (!enabled || page.isClosed()) return null;
   const filename = `${browserName}-${name}.png`;
-  await page.screenshot({ path: path.join(OUT, filename), fullPage: false, animations: 'disabled' });
+  if (locator) await locator.screenshot({ path: path.join(OUT, filename), animations: 'disabled' });
+  else await page.screenshot({ path: path.join(OUT, filename), fullPage: false, animations: 'disabled' });
   return filename;
 }
 
@@ -497,9 +487,48 @@ function overlaps(first, second, tolerance = 1) {
     first.y < second.bottom - tolerance && first.bottom > second.y + tolerance;
 }
 
+function mapViewport(width) {
+  return { width, height: Math.max(1200, Math.ceil(width * mapReference.reference.height / mapReference.reference.width) + 80) };
+}
+
+async function alignedIranConnections(page) {
+  const handle = await page.waitForFunction(() => {
+    const root = document.querySelector('[data-countries-map]');
+    const card = root?.querySelector('[data-map-country="iran"]');
+    const logos = [...(root?.querySelectorAll('[data-map-logo="iran"]') || [])];
+    const paths = [...(root?.querySelectorAll('[data-map-connections] path') || [])];
+    if (document.activeElement !== card || paths.length !== 2 || logos.length !== 2 ||
+      window.__AXE_COUNTRIES_MAP__?.getState().activeCountry !== 'iran') return false;
+    const cardBox = card.getBoundingClientRect();
+    const heading = card.querySelector('.countries-map__country-heading').getBoundingClientRect();
+    const expectedStart = { x: cardBox.right + 6, y: heading.top + heading.height / 2 };
+    const evidence = paths.map((item, index) => {
+      const matrix = item.getScreenCTM();
+      if (!matrix) return null;
+      const screenPoint = (distance) => {
+        const point = item.getPointAtLength(distance);
+        return { x: point.x * matrix.a + point.y * matrix.c + matrix.e, y: point.x * matrix.b + point.y * matrix.d + matrix.f };
+      };
+      const length = item.getTotalLength();
+      const logo = logos[index].getBoundingClientRect();
+      const expectedEnd = { x: logo.left - 9, y: logo.top + logo.height / 2 };
+      const start = screenPoint(0);
+      const end = screenPoint(length);
+      const error = Math.max(Math.abs(start.x - expectedStart.x), Math.abs(start.y - expectedStart.y),
+        Math.abs(end.x - expectedEnd.x), Math.abs(end.y - expectedEnd.y));
+      return { d: item.getAttribute('d'), length, start, expectedStart, end, expectedEnd, maxEndpointErrorPx: error,
+        activeLogo: logos[index].classList.contains('is-active') };
+    });
+    return evidence.every((item) => item && item.activeLogo && Number.isFinite(item.length) && item.length > 0 &&
+      Number.isFinite(item.maxEndpointErrorPx) && item.maxEndpointErrorPx <= 1.5) ? evidence : false;
+  }, null, { timeout: 5000 });
+  try { return await handle.jsonValue(); } finally { await handle.dispose(); }
+}
+
 async function checkMap(page, browserName, width, browserEvidence) {
   const startErrors = browserEvidence.pageErrors.length;
-  await page.setViewportSize({ width, height: 1200 });
+  const viewport = mapViewport(width);
+  await page.setViewportSize(viewport);
   await page.mouse.move(0, 0);
   await page.evaluate(() => document.activeElement?.blur());
   const map = page.locator(SELECTOR.map);
@@ -513,9 +542,12 @@ async function checkMap(page, browserName, width, browserEvidence) {
     };
     const scene = root.querySelector('[data-map-scene]');
     const sceneRect = scene.getBoundingClientRect();
+    const mapImage = root.querySelector('.countries-map__map--desktop');
     return {
       section: rectangle(root), scene: rectangle(scene),
-      map: rectangle(root.querySelector('.countries-map__map--desktop')),
+      map: rectangle(mapImage),
+      sourceImage: { src: mapImage.currentSrc, loaded: mapImage.complete && mapImage.naturalWidth > 0,
+        naturalWidth: mapImage.naturalWidth, naturalHeight: mapImage.naturalHeight },
       viewport: { width: window.innerWidth, height: window.innerHeight },
       documentWidth: document.documentElement.scrollWidth,
       cards: [...root.querySelectorAll('[data-map-country]')].map((card) => ({ ...rectangle(card), country: card.dataset.mapCountry })),
@@ -531,21 +563,48 @@ async function checkMap(page, browserName, width, browserEvidence) {
   assert.equal(geometry.logos.length, 8, 'The desktop map must show all eight exchange logos');
   assert.equal(geometry.cards.length, 7, 'The map must retain all seven country controls');
   invariant(geometry.documentWidth <= width + 2, 'Map causes document horizontal overflow', geometry);
+  invariant(geometry.sourceImage.loaded, 'The source map did not load', geometry.sourceImage);
+  assert.equal(geometry.sourceImage.naturalWidth, mapReference.source.width, 'Native map width differs from the independently registered source');
+  assert.equal(geometry.sourceImage.naturalHeight, mapReference.source.height, 'Native map height differs from the independently registered source');
+  const sourceMapProof = localFileProof(geometry.sourceImage.src);
+  assert.equal(sourceMapProof.path, mapReference.source.path, 'Unexpected map image identity');
+  assert.equal(sourceMapProof.sha256, mapReference.source.sha256, 'Native map bytes differ from the independently registered source');
+  const referenceGeometry = assertMapReferenceGeometry(geometry, mapReference);
   const proofs = [];
   for (const logo of geometry.logos) {
     invariant(logo.loaded && logo.width > 0 && logo.height > 0 && !logo.active, 'Map logo is unloaded, hidden or stuck in active scale', logo);
-    invariant(logo.x >= -1 && logo.right <= width + 1 && logo.y >= -1 && logo.bottom <= 1201, 'Exchange logo is outside the visible map viewport', logo);
+    invariant(logo.x >= -1 && logo.right <= width + 1 && logo.y >= -1 && logo.bottom <= viewport.height + 1, 'Exchange logo is outside the visible map viewport', logo);
     invariant(logo.x >= geometry.section.x - 1 && logo.right <= geometry.section.right + 1 && logo.y >= geometry.section.y - 1 && logo.bottom <= geometry.section.bottom + 1, 'Exchange logo is clipped by the map section', logo);
-    const target = MAP_TARGET[logo.key];
-    invariant(target, 'Unexpected logo identity', logo);
-    for (const field of ['left', 'top', 'width']) closeTo(logo.normalized[field], target[field], 0.08, `${logo.key} normalized ${field}`);
     for (const card of geometry.cards) invariant(!overlaps(logo, card), 'Exchange logo overlaps country navigation', { logo, card });
     proofs.push({ key: logo.key, ...localFileProof(logo.src) });
   }
   for (let i = 0; i < geometry.logos.length; i += 1) {
     for (let j = i + 1; j < geometry.logos.length; j += 1) invariant(!overlaps(geometry.logos[i], geometry.logos[j]), 'Two exchange logos overlap', { first: geometry.logos[i], second: geometry.logos[j] });
   }
-  const shot = await screenshot(page, browserName, `map-${width}`);
+  const shot = await screenshot(page, browserName, `map-${width}`, false, map);
+  const screenshots = [];
+  let activeBelarus = null;
+  if (width === 901 || width === 2560) {
+    await map.locator('[data-map-country="belarus"]').focus();
+    await page.waitForFunction(() => window.__AXE_COUNTRIES_MAP__?.getState().activeCountry === 'belarus' && window.__AXE_COUNTRIES_MAP__.getState().connections === 1);
+    await settle(page);
+    activeBelarus = await map.evaluate((root) => {
+      const rectangle = (node) => {
+        const box = node.getBoundingClientRect();
+        return { x: box.x, y: box.y, width: box.width, height: box.height, right: box.right, bottom: box.bottom };
+      };
+      const logo = root.querySelector('.countries-map__logo--butb');
+      return { logo: { ...rectangle(logo), active: logo.classList.contains('is-active') },
+        cards: [...root.querySelectorAll('[data-map-country]')].map(rectangle),
+        otherLogos: [...root.querySelectorAll('[data-map-logo]:not(.countries-map__logo--butb)')].map(rectangle) };
+    });
+    invariant(activeBelarus.logo.active, 'Belarus keyboard focus did not activate its logo', activeBelarus);
+    for (const card of activeBelarus.cards) invariant(!overlaps(activeBelarus.logo, card, 0.1), 'Active Belarus logo overlaps the country navigation', { width, logo: activeBelarus.logo, card });
+    for (const logo of activeBelarus.otherLogos) invariant(!overlaps(activeBelarus.logo, logo, 0.1), 'Active Belarus logo overlaps another exchange', { width, active: activeBelarus.logo, logo });
+    screenshots.push(await screenshot(page, browserName, `map-${width}-belarus-active`, false, map));
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.waitForFunction(() => window.__AXE_COUNTRIES_MAP__?.getState().connections === 0);
+  }
 
   const iran = map.locator('[data-map-country="iran"]');
   await iran.hover();
@@ -560,12 +619,24 @@ async function checkMap(page, browserName, width, browserEvidence) {
   assert.equal(await map.locator('[data-map-logo="iran"].is-active').count(), 2, 'Keyboard focus must highlight both Iranian exchanges');
   const paths = await map.locator('[data-map-connections] path').evaluateAll((items) => items.map((item) => ({ d: item.getAttribute('d'), length: item.getTotalLength() })));
   invariant(paths.length === 2 && paths.every((item) => Number.isFinite(item.length) && item.length > 0 && !/NaN|Infinity/.test(item.d)), 'Country connection paths are invalid', paths);
+  let focusedResize = null;
+  if (width === 901) {
+    const before = await alignedIranConnections(page);
+    // Do not blur/re-focus: ResizeObserver must update the existing active
+    // country's two paths, using the newly measured logo rectangles.
+    await page.setViewportSize(mapViewport(1024));
+    const resized = await alignedIranConnections(page);
+    await page.setViewportSize(viewport);
+    const restored = await alignedIranConnections(page);
+    focusedResize = { fromWidth: width, toWidth: 1024, focusRetained: true, before, resized, restored };
+  }
   await page.keyboard.press('Tab');
   await page.waitForFunction(() => window.__AXE_COUNTRIES_MAP__?.getState().activeCountry === 'china' && window.__AXE_COUNTRIES_MAP__.getState().connections === 1);
   await page.evaluate(() => document.activeElement?.blur());
   await page.waitForFunction(() => window.__AXE_COUNTRIES_MAP__?.getState().connections === 0);
   invariant(browserEvidence.pageErrors.length === startErrors, 'A JavaScript exception occurred during map interactions', browserEvidence.pageErrors.slice(startErrors));
-  return { width, geometry, assetProofs: proofs, iranPaths: paths, keyboard: ['Egypt', 'Tab to Iran: 2 paths', 'Tab to China: 1 path', 'blur: 0 paths'], screenshot: shot };
+  return { width, geometry, referenceGeometry, sourceMapProof, assetProofs: proofs, activeBelarus, iranPaths: paths, focusedResize,
+    keyboard: ['Egypt', 'Tab to Iran: 2 paths', 'Tab to China: 1 path', 'blur: 0 paths'], screenshot: shot, screenshots: screenshots.filter(Boolean) };
 }
 
 async function checkApprovedPreview(page, browserName, browserEvidence) {
@@ -701,6 +772,12 @@ async function main() {
   const source = JSON.parse(sourceBytes);
   invariant(source.title && source.sourceUrl && Array.isArray(source.paragraphs) && source.paragraphs.length === 10, 'The canonical source file must contain the approved title and all ten paragraphs');
   report.canonicalSource = { path: path.relative(ROOT, options.source), sha256: crypto.createHash('sha256').update(sourceBytes).digest('hex'), paragraphs: source.paragraphs.length, words: normalizeText(source.paragraphs.join(' ')).split(/\s+/).length };
+  const reference = readMapReference(ROOT);
+  mapReference = reference.fixture;
+  report.mapReference = { ...reference.proof, reference: mapReference.reference, measuredRegistration: mapReference.registration.measured,
+    method: mapReference.registration.method, contract: mapReference.contract };
+  report.mapTarget = `${mapReference.reference.filename} (SHA-256 ${mapReference.reference.sha256})`;
+  report.checks.mapContractControl = mapContractSelfTest(mapReference);
   report.playwrightVersion = require('playwright/package.json').version;
   const playwright = require('playwright');
   await startServer();

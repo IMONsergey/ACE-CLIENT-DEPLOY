@@ -1272,7 +1272,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .countries-map {
   position: relative;
   z-index: 3;
-  min-height: clamp(900px, 65.05vw, 1132px);
+  min-height: max(900px, 63.57421875vw);
   margin-top: -1px;
   overflow: hidden;
   color: #fff;
@@ -1299,9 +1299,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .countries-map__surface {
   position: absolute;
-  top: 55px;
-  left: 10%;
-  width: 90%;
+  /* Registered to the client's 2048 × 1302 reference by coastline, not pins.
+     Keep the map and its logos in one scene; the native map is 2382 × 1722. */
+  top: 1.041667vw;
+  left: -4.513889%;
+  width: 110.277778%;
   aspect-ratio: 2382 / 1722;
 }
 
@@ -2890,7 +2892,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (min-width: 901px) {
   .countries-map__title,
   .countries-map__cards {
-    left: max(var(--layout-pad), calc((100vw - var(--layout-max)) / 2));
+    /* Preserve the existing grid through 2048px. On ultrawide screens the
+       legend must not drift into the geographically anchored logos. */
+    left: min(max(var(--layout-pad), calc((100vw - var(--layout-max)) / 2)), 15vw);
   }
 
   .events__inner,

@@ -26,12 +26,13 @@ const OUTPUT = path.join(OUTPUT_DIRECTORY, ARCHIVE_NAME);
 const REQUIRED_FILES = ['index.html', 'news-preview.html', '.nojekyll', 'README.md'];
 const REQUIRED_DIRECTORIES = ['assets', 'bids-offers', 'docs', 'scripts'];
 const BROWSERS = ['chromium', 'firefox', 'webkit'];
-const REQUIRED_CASES = ['source-fallbacks', 'popup-1440', 'popup-1280', 'popup-390', 'popup-320', 'map-901', 'map-1024', 'map-1440', 'map-1920', 'approved-preview', 'component-resources-and-errors'];
+const REQUIRED_CASES = ['source-fallbacks', 'popup-1440', 'popup-1280', 'popup-390', 'popup-320', 'map-901', 'map-1024', 'map-1440', 'map-1920', 'map-2048', 'map-2560', 'approved-preview', 'component-resources-and-errors'];
 const SELECTED_SCREENSHOTS = [
   'chromium-approved-preview-1440-top.png',
   'chromium-approved-preview-1440-full.png',
   'chromium-map-1440.png',
-  'webkit-popup-390-top.png'
+  'webkit-popup-390-top.png',
+  'chromium-map-2048.png'
 ];
 const PHOTO_HASHES = new Map([
   ['assets/images/news/article/spief-2025-documents.jpg', '163f24c878e5277f70d199bed96fead3ca66c984ca4156def6f97880b37ea8d1'],
@@ -305,7 +306,8 @@ async function main(options) {
     invariant(capture.bytes.length >= 24 && capture.bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) && capture.bytes.toString('ascii', 12, 16) === 'IHDR', `Screenshot is not a PNG: ${filename}`);
     const width = capture.bytes.readUInt32BE(16);
     const height = capture.bytes.readUInt32BE(20);
-    invariant(width === (filename.startsWith('webkit-popup-390') ? 390 : 1440) && height > 0 && height <= 12000, `Unexpected screenshot geometry: ${filename}`);
+    const expectedWidth = filename === 'chromium-map-2048.png' ? 2048 : filename.startsWith('webkit-popup-390') ? 390 : 1440;
+    invariant(width === expectedWidth && height > 0 && height <= 12000, `Unexpected screenshot geometry: ${filename}`);
     await writePayload(payload, `qa/${filename}`, capture.bytes, records);
     totalBytes += capture.size;
   }
