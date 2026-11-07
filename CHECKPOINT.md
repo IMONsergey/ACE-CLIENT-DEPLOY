@@ -16,7 +16,13 @@
 
 Новый code-proof `artifacts/code-proof-map-20261107.json`: 29 файлов, SHA-256 `d66f9b0faa840c0af4cbf1a964de834c2538246fe68ef44d56e45c0cc5189b20`. Снят ДО прогона; после него все 29 хешей повторно совпали. Старые proof/report/архив не перезаписаны. Новые вспомогательные deploy-проверки не входят в runtime и проверяются отдельно.
 
-Следующий шаг: закоммитить проверенную правку в feature/news-popup-map-20261106, обновить ТОЛЬКО ace.imon.world новым отдельным статическим release, пройти public hash-check и новый smoke с независимой геометрией 2048. Затем сохранить старую папку artifacts/handoff как artifacts/handoff-before-map-20261107 и собрать новый архив по отчету и proof выше. Клиентский int-ace.org, main, GitHub Pages и Figma не трогать. Исходный HEAD перед правкой `886c20b0a24f69434f859e70370dd8ecd13c16f8`; до публикации live current `releases/20261106-3727ded`.
+Проверенный runtime закоммичен: `36c904969c79f3ee46034c14f33e20c86f2eca45` в feature/news-popup-map-20261106. Опубликован отдельный неизменяемый release `/srv/ace-preview/releases/20261107-36c9049`; `/srv/ace-preview/current` атомарно переключен на него. Старый `releases/20261106-3727ded` сохранен для отката. Nginx, DNS и сертификат не изменялись. Клиентский int-ace.org, main, GitHub Pages и Figma не менялись. Исходный HEAD перед правкой `886c20b0a24f69434f859e70370dd8ecd13c16f8`.
+
+Public hash-check: 37/37 PASS (`artifacts/deploy/public-check.json`), включая 25 runtime-путей из нового proof, корневой URL, query-вариант новости, две фотографии, закрытые служебные пути и HTTP → HTTPS. Новый публичный browser smoke `20261107T051233-86101fb49f`: succeeded, 6/6 PASS, завершен 2026-11-07T05:12:53Z. Отчет `artifacts/published-smoke/run-sx6OC8/report.json`, SHA-256 `cf9926785497a0553ec32c48c6bbf3a6f92d2ee0f5f806764d41ae4ba815b743`. Public section 2048×1302, максимум отклонения 1.328125 px. Скриншот публичной карты просмотрен: он побайтово совпал с локальным QA PNG, SHA-256 `d9e9fda70740d6b9aab0dd53c70caedf39f96bfc8cf83d78840ce63680488cf7` (PNG 2048×1303 из-за округления clip). JS/resource errors пустые.
+
+В `/etc/imon-projects/domains.json` обновлен только `projects.ace.source_commit`, остальные данные сравнены и сохранены. Резервная копия `/var/backups/ace-map-20261107-36c9049/domains.json`; новый SHA-256 реестра `bbca730fb4bb8223256569f07c421a28db94638b4885b0eb002a281d9b7d999d`.
+
+Старая папка комплекта перемещена без удаления в `artifacts/handoff-before-map-20261107`. Следующий шаг: собрать новый `artifacts/handoff/ACE-Верстка.zip` через imon-job по новому отчету и proof выше, проверить состав/хеш, экспортировать, затем сохранить итог и push только feature-ветки. Повторять QA или публикацию без новых runtime-правок не требуется.
 
 Ниже сохранена история предыдущей реализации и выдачи; утверждения о готовности карты в ней заменены этим разделом.
 
