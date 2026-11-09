@@ -67,6 +67,10 @@ function assessMapReferenceGeometry(geometry, fixture) {
   }
   const scale = section.width / fixture.reference.width;
   const tolerance = fixture.contract.referenceTolerancePx * scale + fixture.contract.layoutRoundingPx;
+  const canvas = geometry.mapViewport;
+  condition('dedicated complete map viewport exists', canvas && BOX_FIELDS.every((field) => Number.isFinite(canvas[field])), {});
+  const expectedCanvas = { x: section.x, y: section.y, width: section.width, height: fixture.reference.height * scale };
+  for (const field of BOX_FIELDS) compare(`map viewport ${field}`, canvas?.[field], expectedCanvas[field], tolerance);
   const fit = fixture.registration.measured;
   const expectedScene = {
     x: section.x + fit.translateX * scale,
@@ -82,12 +86,10 @@ function assessMapReferenceGeometry(geometry, fixture) {
     compare(`scene absolute ${field}`, geometry.scene?.[field], expectedScene[field], tolerance);
     compare(`native map absolute ${field}`, geometry.map?.[field], expectedScene[field], tolerance);
   }
-  const minHeight = fixture.contract.minimumSectionHeightPx;
-  if (section.width >= fixture.contract.exactSectionHeightFromWidthPx) {
-    compare('complete design section height', section.height, Math.max(minHeight, fixture.reference.height * scale), tolerance);
-  } else {
-    condition('narrow desktop minimum section height', section.height >= minHeight - tolerance, { actual: section.height, minimum: minHeight, tolerance });
-  }
+  condition('section contains complete map viewport', section.height >= expectedCanvas.height - tolerance,
+    { actual: section.height, minimum: expectedCanvas.height, tolerance });
+  if (fixture.contract.exactSectionHeightAtReferenceWidth && Math.abs(section.width - fixture.reference.width) <= 0.1)
+    compare('complete reference section height', section.height, fixture.reference.height, tolerance);
   const logos = Array.isArray(geometry.logos) ? geometry.logos : [];
   const keys = logos.map(({ key }) => key);
   condition('exactly eight unique exchange identities', keys.length === REQUIRED_LOGOS.length && new Set(keys).size === keys.length &&
@@ -129,10 +131,10 @@ function syntheticReferenceGeometry(width, fixture) {
   const fit = fixture.registration.measured;
   // Nonzero vertical origin proves the assertion is relative to the section,
   // not accidentally to the current page scroll position or viewport top.
-  const section = box(0, 43, width, Math.max(fixture.contract.minimumSectionHeightPx, fixture.reference.height * scale));
+  const section = box(0, 43, width, fixture.reference.height * scale);
   const scene = box(fit.translateX * scale, section.y + fit.translateY * scale,
     fixture.source.width * fit.scale * scale, fixture.source.height * fit.scale * scale);
-  return { viewport: { width, height: section.height + 100 }, section, scene, map: { ...scene },
+  return { viewport: { width, height: section.height + 100 }, section, mapViewport: { ...section }, scene, map: { ...scene },
     logos: fixture.logos.map(({ key, box: target }) => ({ key, ...box(target.x * scale, section.y + target.y * scale, target.width * scale, target.height * scale) })) };
 }
 
@@ -165,16 +167,18 @@ function selfTest(fixture) {
     cases.push({ width, referenceAccepted: true, legacySurfaceRejected: true, legacyFailures: legacy.failures.length,
       legacyMaxDeviationPx: legacy.maxDeviationPx });
   }
-  for (const mutation of ['shift-one-logo', 'shift-native-map-only', 'cap-complete-canvas', 'duplicate-logo']) {
+  for (const mutation of ['shift-one-logo', 'shift-native-map-only', 'cap-complete-canvas', 'duplicate-logo', 'missing-map-viewport', 'crop-map-viewport']) {
     const geometry = syntheticReferenceGeometry(2048, fixture);
     if (mutation === 'shift-one-logo') geometry.logos[0].x += 8;
     if (mutation === 'shift-native-map-only') geometry.map.y += 8;
     if (mutation === 'cap-complete-canvas') geometry.viewport.width = 2560;
     if (mutation === 'duplicate-logo') geometry.logos[0].key = geometry.logos[1].key;
+    if (mutation === 'missing-map-viewport') delete geometry.mapViewport;
+    if (mutation === 'crop-map-viewport') geometry.mapViewport.height -= 20;
     assert.ok(!assessMapReferenceGeometry(geometry, fixture).passed, `Mutation unexpectedly accepted: ${mutation}`);
   }
   return { status: 'passed', mode: 'pure-contract-self-test', cases,
-    additionalRejectedMutations: ['shift-one-logo', 'shift-native-map-only', 'cap-complete-canvas', 'duplicate-logo'],
+    additionalRejectedMutations: ['shift-one-logo', 'shift-native-map-only', 'cap-complete-canvas', 'duplicate-logo', 'missing-map-viewport', 'crop-map-viewport'],
     browserRun: false, productionModified: false, expectedValuesReadFromCSS: false };
 }
 

@@ -1270,38 +1270,60 @@ button, a { -webkit-tap-highlight-color: transparent; }
    ========================================================================== */
 
 .countries-map {
+  --map-unit: 0.048828125vw;
   position: relative;
   z-index: 3;
-  min-height: max(900px, 63.57421875vw);
+  container-type: inline-size;
   margin-top: -1px;
   overflow: hidden;
   color: #fff;
 }
 
+@supports (width: 1cqw) {
+  .countries-map { --map-unit: 0.048828125cqw; }
+}
+
 .countries-map__title {
   position: absolute;
   z-index: 5;
-  top: 7.8%;
-  left: max(var(--layout-pad), calc((100vw - 1540px) / 2));
+  top: calc(80 * var(--map-unit));
+  left: 5.56640625%;
   margin: 0;
   font-family: var(--font-body);
-  font-size: 22px;
-  line-height: 1.35;
+  font-size: max(20px, calc(25 * var(--map-unit)));
+  line-height: 1.28;
   letter-spacing: 0;
   font-weight: 500;
   text-transform: uppercase;
 }
 
 .countries-map__desktop {
+  position: relative;
+  min-height: calc(1302 * var(--map-unit));
+  padding-top: calc(152 * var(--map-unit));
+  padding-bottom: calc(188 * var(--map-unit));
+}
+
+/* One registered canvas at every viewport width. The readable legend may
+   increase the section height, but must never stretch the map or move pins. */
+.countries-map__viewport {
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 2048 / 1302;
+}
+
+/* Reveal only opacity: no visual movement of map, logos or legend on entry. */
+.motion-ready .countries-map .countries-map__desktop.motion-reveal {
+  transform: none;
+  transition: opacity 420ms var(--motion-ease);
 }
 
 .countries-map__surface {
   position: absolute;
   /* Registered to the client's 2048 × 1302 reference by coastline, not pins.
      Keep the map and its logos in one scene; the native map is 2382 × 1722. */
-  top: 1.041667vw;
+  top: 1.638505889%;
   left: -4.513889%;
   width: 110.277778%;
   aspect-ratio: 2382 / 1722;
@@ -1354,15 +1376,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   max-width: none;
   height: auto;
   transform-origin: center;
-  opacity: 0.88;
-  transition: opacity 320ms ease, transform 520ms cubic-bezier(.16, .84, .24, 1);
+  opacity: 1;
+  transition: filter 160ms ease;
   user-select: none;
 }
 
 .countries-map__logo.is-active {
   z-index: 5;
-  opacity: 1;
-  transform: scale(1.08);
+  filter: drop-shadow(0 0 4px rgba(128, 232, 242, 0.75));
 }
 
 /* Client design anchors, normalized to the 2382 × 1722 map image. */
@@ -1376,43 +1397,50 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .countries-map__logo--emx { top: 43.332%; left: 33.413%; width: 5.730%; }
 
 .countries-map__cards {
-  position: absolute;
+  position: relative;
   z-index: 4;
-  top: 13.05%;
-  left: max(var(--layout-pad), calc((100vw - 1540px) / 2));
   display: flex;
-  width: clamp(208px, 13.4vw, 232px);
+  width: max(232px, 14.2578125%);
+  margin-left: 5.56640625%;
   flex-direction: column;
-  gap: 6px;
+  gap: max(4px, calc(6.8 * var(--map-unit)));
 }
 
 .countries-map__country-card {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   width: 100%;
-  min-height: 50px;
-  grid-template-rows: auto 0fr;
-  padding: 9px 12px;
-  overflow: hidden;
-  border: 1px solid rgba(100, 220, 231, 0.42);
-  border-radius: 7px;
+  min-height: calc(117 * var(--map-unit));
+  padding: max(11px, calc(16 * var(--map-unit))) max(11px, calc(16 * var(--map-unit))) max(8px, calc(10 * var(--map-unit)));
+  border: max(1px, var(--map-unit)) solid rgba(100, 220, 231, 0.42);
+  border-radius: max(7px, calc(12 * var(--map-unit)));
   color: #fff;
   background: rgba(4, 83, 101, 0.54);
+  -webkit-backdrop-filter: blur(max(8px, calc(12 * var(--map-unit))));
+  backdrop-filter: blur(max(8px, calc(12 * var(--map-unit))));
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: grid-template-rows 440ms cubic-bezier(.16, .84, .24, 1), background-color 320ms ease, border-color 320ms ease;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 
-.countries-map__country-card:hover,
+.countries-map__country-card[data-map-country="russia"] { min-height: calc(138 * var(--map-unit)); }
+.countries-map__country-card[data-map-country="iran"] { min-height: calc(176 * var(--map-unit)); }
+.countries-map__country-card[data-map-country="china"] { min-height: calc(137 * var(--map-unit)); }
+
 .countries-map__country-card:focus-visible,
 .countries-map__country-card.is-active {
   border-color: rgba(128, 232, 242, 0.88);
   background: rgba(4, 83, 101, 0.76);
 }
 
-.countries-map__country-card:hover,
-.countries-map__country-card:focus-visible {
-  grid-template-rows: auto 1fr;
+@media (hover: hover) and (pointer: fine) {
+  .countries-map__country-card:hover {
+    border-color: rgba(128, 232, 242, 0.88);
+    background: rgba(4, 83, 101, 0.76);
+  }
 }
 
 .countries-map__country-card:focus-visible {
@@ -1424,18 +1452,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 9px;
+  gap: max(8px, calc(10 * var(--map-unit)));
 }
 
 .countries-map__country-heading img {
-  width: 30px;
+  width: max(32px, calc(50 * var(--map-unit)));
   height: auto;
-  flex: 0 0 30px;
+  flex: 0 0 auto;
 }
 
 .countries-map__country-heading strong {
   min-width: 0;
-  font-size: clamp(14px, 0.94vw, 16px);
+  font-size: max(16px, calc(20 * var(--map-unit)));
   line-height: 1.2;
   letter-spacing: 0;
   font-weight: 500;
@@ -1444,34 +1472,75 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .countries-map__country-details {
   display: block;
-  min-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 320ms ease 60ms, transform 440ms cubic-bezier(.16, .84, .24, 1);
-}
-
-.countries-map__country-card:hover .countries-map__country-details,
-.countries-map__country-card:focus-visible .countries-map__country-details {
+  margin-top: max(10px, calc(16 * var(--map-unit)));
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 .countries-map__country-copy {
   display: block;
-  margin-top: 9px;
-  font-size: clamp(11px, 0.7vw, 12px);
-  line-height: 1.35;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: max(12px, calc(14 * var(--map-unit)));
+  line-height: 1.42857143;
   letter-spacing: 0;
   font-weight: 400;
 }
 
 .countries-map__country-copy + .countries-map__country-copy {
-  margin-top: 12px;
+  margin-top: max(14px, calc(20 * var(--map-unit)));
 }
 
-.countries-map__mobile {
-  display: none;
+.countries-map__copy-line { display: block; }
+
+@media (max-width: 1180px) {
+  .countries-map__title {
+    top: max(24px, calc(80 * var(--map-unit)));
+    left: max(20px, 5.56640625%);
+    right: 20px;
+    font-size: clamp(18px, 2.2vw, 24px);
+  }
+
+  .countries-map__desktop {
+    min-height: 0;
+    padding: 0 0 48px;
+  }
+
+  .countries-map__viewport {
+    position: relative;
+    inset: auto;
+    overflow: hidden;
+  }
+
+  .countries-map__connections { display: none; }
+
+  .countries-map__cards {
+    display: grid;
+    width: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px;
+    margin: 24px max(20px, 5.56640625%) 0;
+  }
+
+  .countries-map__country-card,
+  .countries-map__country-card[data-map-country] {
+    min-height: 0;
+    height: 100%;
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .countries-map__country-heading { gap: 10px; }
+  .countries-map__country-heading img { width: 40px; }
+  .countries-map__country-heading strong { font-size: 16px; }
+  .countries-map__country-details { margin-top: 14px; }
+  .countries-map__country-copy { font-size: 14px; line-height: 20px; }
+  .countries-map__country-copy + .countries-map__country-copy { margin-top: 16px; }
+}
+
+@media (max-width: 599px) {
+  .countries-map__cards { grid-template-columns: minmax(0, 1fr); }
 }
 
 .events {
@@ -2890,13 +2959,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (min-width: 901px) {
-  .countries-map__title,
-  .countries-map__cards {
-    /* Preserve the existing grid through 2048px. On ultrawide screens the
-       legend must not drift into the geographically anchored logos. */
-    left: min(max(var(--layout-pad), calc((100vw - var(--layout-max)) / 2)), 15vw);
-  }
-
   .events__inner,
   .leaders__inner,
   .governance__grid,
@@ -2971,77 +3033,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .hero__copy { flex: 0 1 auto; }
   .hero__request { margin-top: 34px; }
   .hero__visual { display: none; }
-
-  .countries-map {
-    min-height: 0;
-    padding-top: clamp(46px, 7vw, 78px);
-  }
-
-  .countries-map__title {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: calc(100% - (var(--layout-pad) * 2));
-    margin-inline: auto;
-    font-size: clamp(26px, 4.3vw, 48px);
-    line-height: 1.2;
-  }
-
-  .countries-map__desktop {
-    display: none;
-  }
-
-  .countries-map__mobile {
-    display: block;
-  }
-
-  .countries-map__mobile-map {
-    position: relative;
-    height: clamp(300px, 72vw, 805px);
-    margin-top: clamp(16px, 2vw, 24px);
-  }
-
-  .countries-map__map--mobile {
-    position: absolute;
-    top: 0;
-    left: -10vw;
-    width: 120vw;
-    max-width: none;
-    height: auto;
-    pointer-events: none;
-    user-select: none;
-  }
-
-  .countries-map__mobile-flags {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(24px, 3.2vw, 36px) clamp(18px, 3vw, 34px);
-    padding: 0 clamp(24px, 4.3vw, 48px) clamp(70px, 8vw, 90px);
-  }
-
-  .countries-map__mobile-country {
-    display: flex;
-    min-width: 0;
-    align-items: center;
-    gap: clamp(12px, 2vw, 24px);
-    color: #fff;
-  }
-
-  .countries-map__mobile-country img {
-    width: clamp(32px, 5.1vw, 58px);
-    height: auto;
-    flex: 0 0 auto;
-  }
-
-  .countries-map__mobile-country span {
-    min-width: 0;
-    white-space: nowrap;
-    font-size: clamp(15px, 2.75vw, 31px);
-    line-height: 1.2;
-    letter-spacing: 0;
-    font-weight: 400;
-    text-transform: uppercase;
-  }
 
   .governance {
     padding: 42px 0 68px;
@@ -3452,19 +3443,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (max-width: 520px) {
-  .countries-map__mobile-map {
-    height: clamp(300px, 86vw, 390px);
-  }
-
-  .countries-map__mobile-flags {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 18px;
-  }
-
-  .countries-map__mobile-country span {
-    font-size: clamp(13px, 4vw, 17px);
-  }
-
   .documents-section__inner {
     width: calc(100% - 38px);
   }
@@ -4496,18 +4474,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 380px) {
   .contact-stage h2 {
     font-size: 40px;
-  }
-
-  .countries-map__mobile-country {
-    gap: 8px;
-  }
-
-  .countries-map__mobile-country img {
-    width: 28px;
-  }
-
-  .countries-map__mobile-country span {
-    font-size: 12px;
   }
 
   .timeline__card:nth-child(6) p {

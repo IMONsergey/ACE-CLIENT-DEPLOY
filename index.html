@@ -316,6 +316,7 @@
         <h2 class="countries-map__title typo" id="countries-title">Страны—участники</h2>
 
         <div class="countries-map__desktop">
+          <div class="countries-map__viewport">
           <div class="countries-map__surface" data-map-scene>
             <img class="countries-map__map countries-map__map--desktop" src="assets/images/countries/map.png" alt="" width="2382" height="1722" loading="lazy">
             <svg class="countries-map__connections" aria-hidden="true" data-map-connections></svg>
@@ -330,6 +331,7 @@
               <img class="countries-map__logo countries-map__logo--irenex" src="assets/images/countries/logos/irenex.png" alt="" width="225" height="113" data-map-logo="iran">
               <img class="countries-map__logo countries-map__logo--asia" src="assets/images/countries/logos/asia-europe-exchange.png" alt="" width="327" height="87" data-map-logo="china">
             </div>
+          </div>
           </div>
 
           <div class="countries-map__cards">
@@ -351,13 +353,13 @@
             </button>
             <button class="countries-map__country-card" type="button" data-map-country="egypt">
               <span class="countries-map__country-heading"><img src="assets/images/flags/flag-egypt.png" alt="" width="140" height="92"><strong>Египет</strong></span>
-              <span class="countries-map__country-details"><span class="countries-map__country-copy">Egyptian Mercantile Exchange (EMX)</span></span>
+              <span class="countries-map__country-details"><span class="countries-map__country-copy">Egyptian Mercantile<span class="countries-map__copy-line"> Exchange (EMX)</span></span></span>
             </button>
             <button class="countries-map__country-card" type="button" data-map-country="iran">
               <span class="countries-map__country-heading"><img src="assets/images/flags/flag-iran.png" alt="" width="140" height="92"><strong>Иран</strong></span>
               <span class="countries-map__country-details">
-                <span class="countries-map__country-copy">Иранская товарная биржа (Iran Mercantile Exchange, IME)</span>
-                <span class="countries-map__country-copy">Иранская энергетическая биржа (Iran Energy Exchange, IRENEX)</span>
+                <span class="countries-map__country-copy">Иранская товарная биржа<span class="countries-map__copy-line"> (Iran Mercantile Exchange, IME)</span></span>
+                <span class="countries-map__country-copy">Иранская энергетическая биржа<span class="countries-map__copy-line"> (Iran Energy Exchange, IRENEX)</span></span>
               </span>
             </button>
             <button class="countries-map__country-card" type="button" data-map-country="china">
@@ -367,20 +369,6 @@
           </div>
         </div>
 
-        <div class="countries-map__mobile">
-          <div class="countries-map__mobile-map">
-            <img class="countries-map__map countries-map__map--mobile" src="assets/images/countries/map.png" alt="" width="2382" height="1722" loading="lazy">
-          </div>
-          <div class="countries-map__mobile-flags">
-            <div class="countries-map__mobile-country"><img src="assets/images/flags/flag-russia.png" alt="" width="140" height="92"><span>Россия</span></div>
-            <div class="countries-map__mobile-country"><img src="assets/images/flags/flag-belarus.png" alt="" width="140" height="92"><span>Беларусь</span></div>
-            <div class="countries-map__mobile-country"><img src="assets/images/flags/flag-kazakhstan.png" alt="" width="140" height="92"><span>Казахстан</span></div>
-            <div class="countries-map__mobile-country"><img src="assets/images/flags/flag-uzbekistan.png" alt="" width="140" height="92"><span>Узбекистан</span></div>
-            <div class="countries-map__mobile-country"><img src="assets/images/flags/flag-egypt.png" alt="" width="140" height="92"><span>Египет</span></div>
-            <div class="countries-map__mobile-country"><img src="assets/images/flags/flag-iran.png" alt="" width="140" height="92"><span>Иран</span></div>
-            <div class="countries-map__mobile-country"><img src="assets/images/flags/flag-china.png" alt="" width="140" height="92"><span>Китай</span></div>
-          </div>
-        </div>
       </section>
 
       <section class="events" id="events" aria-labelledby="events-title">

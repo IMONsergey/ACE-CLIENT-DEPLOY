@@ -67,14 +67,26 @@
     "Logo boxes are independently measured white-card pixel bounds in the supplied reference, not copied CSS percentages. Raster edge antialiasing contributes approximately one reference pixel of uncertainty.",
     "Landmark centers are centers of independently measured component bounds, not centers predicted by the transform. Native thresholds: island alpha > 5 or 10; Caspian water alpha < 128. Reference local green thresholds: > 155 or > 105 for islands, < 135 for Caspian water; threshold sweeps of +/- 5 remain stable.",
     "Two reference pixels plus 0.05 CSS px of layout quantization cover raster measurement and fractional browser layout. The tolerance scales with the complete reference width, never with an incorrectly sized map surface.",
-    "No maximum canvas width is assumed. At narrow desktop widths the section retains a 900 px minimum height; from 1440 px its complete design aspect ratio is also checked."
+    "No maximum canvas width is assumed. The map viewport preserves the complete 2048:1302 reference aspect at every width; the surrounding section may grow to contain readable country descriptions. At the reference width the complete section is 1302 px high.",
+    "The full reference also fixes legend origin x114/y152 and width292, title line-box origin x114/y80, 50px flags, country heading20/24 and body14/20. These are acceptance measurements, not values inferred from the implementation."
   ],
+  "legend": {
+    "origin": { "x": 114, "y": 152 },
+    "width": 292,
+    "titleOrigin": { "x": 114, "y": 80 },
+    "flagWidth": 50,
+    "headingFontSize": 20,
+    "headingLineHeight": 24,
+    "descriptionFontSize": 14,
+    "descriptionLineHeight": 20
+  },
   "contract": {
     "referenceTolerancePx": 2,
     "layoutRoundingPx": 0.05,
-    "minimumSectionHeightPx": 900,
-    "exactSectionHeightFromWidthPx": 1440,
+    "mapViewportRequired": true,
+    "exactSectionHeightAtReferenceWidth": true,
+    "sidebarFromWidthPx": 1181,
     "fullWidthCanvas": true,
-    "desktopWidths": [901, 1024, 1440, 1920, 2048, 2560]
+    "desktopWidths": [320, 390, 599, 600, 900, 901, 1024, 1180, 1181, 1440, 1920, 2048, 2560]
   }
 }

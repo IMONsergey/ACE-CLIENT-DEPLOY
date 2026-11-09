@@ -26,7 +26,10 @@ const OUTPUT = path.join(OUTPUT_DIRECTORY, ARCHIVE_NAME);
 const REQUIRED_FILES = ['index.html', 'news-preview.html', '.nojekyll', 'README.md'];
 const REQUIRED_DIRECTORIES = ['assets', 'bids-offers', 'docs', 'scripts'];
 const BROWSERS = ['chromium', 'firefox', 'webkit'];
-const REQUIRED_CASES = ['source-fallbacks', 'popup-1440', 'popup-1280', 'popup-390', 'popup-320', 'map-901', 'map-1024', 'map-1440', 'map-1920', 'map-2048', 'map-2560', 'approved-preview', 'component-resources-and-errors'];
+const REQUIRED_CASES = ['source-fallbacks', 'popup-1440', 'popup-1280', 'popup-390', 'popup-320',
+  'map-320', 'map-390', 'map-599', 'map-600', 'map-900', 'map-901', 'map-1024', 'map-1180', 'map-1181',
+  'map-1440', 'map-1920', 'map-2048', 'map-2560', 'map-resize-continuity', 'map-normal-motion', 'map-touch',
+  'approved-preview', 'component-resources-and-errors'];
 const SELECTED_SCREENSHOTS = [
   'chromium-approved-preview-1440-top.png',
   'chromium-approved-preview-1440-full.png',

@@ -205,6 +205,7 @@ async function checkUI() {
     const image = root.querySelector('.countries-map__map--desktop');
     return {
       section: rectangle(root), scene: rectangle(root.querySelector('[data-map-scene]')), map: rectangle(image),
+      mapViewport: rectangle(root.querySelector('.countries-map__viewport')),
       viewport: { width: window.innerWidth, height: window.innerHeight },
       sourceImage: { src: image.currentSrc, loaded: image.complete && image.naturalWidth > 0,
         naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight },
@@ -238,6 +239,63 @@ async function checkUI() {
   assert.deepEqual(report.unexpectedPopups, [], 'Unexpected navigation during reference geometry check');
   assert.deepEqual(report.blockedRequests, [], 'Unexpected request during reference geometry check');
   report.checks.push('Published 2048 px map matches independent scene, native image, eight logo boxes and coastline landmarks; complete map screenshot captured with at most one pixel of clip rounding');
+
+  // The unified map must survive both sides of the removed 900px breakpoint
+  // and the new 1180px legend breakpoint without replacing exchange logos.
+  report.adaptiveMap = [];
+  for (const width of [900, 901, 1180, 1181]) {
+    await page.setViewportSize({ width, height: 1400 });
+    await page.mouse.move(0, 0);
+    await page.evaluate(() => document.activeElement?.blur());
+    await map.evaluate(node => node.scrollIntoView({ block: 'start', behavior: 'auto' }));
+    await settle(page);
+    const state = await map.evaluate(root => {
+      const box = node => {
+        const rect = node.getBoundingClientRect();
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, right: rect.right, bottom: rect.bottom };
+      };
+      const visible = node => {
+        if (!node || !node.getClientRects().length) return false;
+        for (let ancestor = node; ancestor && ancestor !== root.parentElement; ancestor = ancestor.parentElement) {
+          const style = getComputedStyle(ancestor);
+          if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) < 0.99) return false;
+        }
+        return true;
+      };
+      return {
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+        section: box(root), mapViewport: box(root.querySelector('.countries-map__viewport')),
+        scene: box(root.querySelector('[data-map-scene]')), map: box(root.querySelector('.countries-map__map--desktop')),
+        oldMobileMapCount: root.querySelectorAll('.countries-map__mobile').length,
+        documentWidth: document.documentElement.scrollWidth,
+        connectionsVisible: getComputedStyle(root.querySelector('[data-map-connections]')).display !== 'none',
+        cards: [...root.querySelectorAll('[data-map-country]')].map(card => {
+          const details = card.querySelector('.countries-map__country-details');
+          return { country: card.dataset.mapCountry, visible: visible(card) && visible(details),
+            details: box(details), text: details.textContent.trim() };
+        }),
+        logos: [...root.querySelectorAll('[data-map-logo]')].map(logo => ({
+          key: [...logo.classList].find(name => name.startsWith('countries-map__logo--')).slice('countries-map__logo--'.length),
+          ...box(logo), loaded: logo.complete && logo.naturalWidth > 0, visible: visible(logo),
+        })),
+      };
+    });
+    assert.equal(state.oldMobileMapCount, 0, 'Published page must not switch to the old flag-only mobile map');
+    assert.equal(state.logos.length, 8, 'Every responsive state must retain all eight exchanges');
+    assert.ok(state.logos.every(logo => logo.loaded && logo.visible && logo.width > 0 && logo.height > 0), 'Responsive state hides an exchange');
+    assert.equal(state.cards.length, 7, 'Every responsive state must retain all seven countries');
+    assert.ok(state.cards.every(card => card.visible && card.details.height > 0 && card.text.length > 0), 'Responsive descriptions require hover/focus or are hidden');
+    assert.ok(state.documentWidth <= width + 2, 'Responsive map causes horizontal page overflow');
+    assert.equal(state.connectionsVisible, width >= reference.fixture.contract.sidebarFromWidthPx,
+      'Connector visibility does not match the sidebar/adaptive legend layout');
+    const assessment = assertMapReferenceGeometry(state, reference.fixture);
+    report.adaptiveMap.push({ width, geometry: state, maxDeviationPx: assessment.maxDeviationPx });
+  }
+  assert.deepEqual(report.pageErrors, [], 'Page JavaScript errors after responsive map checks');
+  assert.deepEqual(report.ownResourceErrors, [], 'Failed own resources after responsive map checks');
+  assert.deepEqual(report.unexpectedPopups, [], 'Unexpected navigation after responsive map checks');
+  assert.deepEqual(report.blockedRequests, [], 'Unexpected request after responsive map checks');
+  report.checks.push('Published unified map keeps eight logos and seven open descriptions across 900/901 and 1180/1181, with independent viewport/scene/logo/coastline geometry');
 }
 
 (async () => {
