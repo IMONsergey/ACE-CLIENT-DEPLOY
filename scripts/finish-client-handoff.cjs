@@ -20,9 +20,14 @@ for(const screen of proof.normalViewportScreens){assert.equal(screen.rows.length
 assert.equal(digest(path.join(OUT,'ACE-Разработчикам.zip')),pack.archiveSha256);
 assert.equal(digest(path.join(OUT,'ACE-Проверка-логотипов.pdf')),proof.pdf.sha256);
 assert.equal(digest(path.join(OUT,'ACE-Экран-1920.png')),proof.preview.sha256);
+const comparisonSource=path.join(OUT,'screen-proof/page-1.png');
+const comparisonOutput=path.join(OUT,'ACE-Сравнение-1920.png');
+assert(fs.lstatSync(comparisonSource).isFile());
+if(fs.existsSync(comparisonOutput))assert.equal(digest(comparisonOutput),digest(comparisonSource));
+else fs.copyFileSync(comparisonSource,comparisonOutput,fs.constants.COPYFILE_EXCL);
 try{fs.mkdirSync(DESKTOP,{mode:0o755});}catch(error){if(error.code!=='EEXIST')throw error;}
 assert(fs.lstatSync(DESKTOP).isDirectory()&&!fs.lstatSync(DESKTOP).isSymbolicLink());
-const names=['ACE-Разработчикам.zip','ACE-Проверка-логотипов.pdf','ACE-Экран-1920.png'];
+const names=['ACE-Разработчикам.zip','ACE-Проверка-логотипов.pdf','ACE-Экран-1920.png','ACE-Сравнение-1920.png'];
 const files=names.map(name=>{
   const source=path.join(OUT,name),destination=path.join(DESKTOP,name);
   assert(fs.lstatSync(source).isFile()&&!fs.lstatSync(source).isSymbolicLink());
@@ -34,6 +39,7 @@ const files=names.map(name=>{
 });
 const record={status:'ready',createdAt:new Date().toISOString(),files,
   visualReview:{pages:[1,2,3,4],textAndImageClipping:false,allTargetLogosVisible:true,sourceCaptionsCorrect:true,actualBrowserScreenshotsUnmodified:true,normalViewports:[{width:1920,height:1080},{width:1440,height:900}],zoomPercent:100},
+  qualifications:['PASS covers positions and sizes of all eight map logos, not pixel identity of the whole section.','At 1440px, country legend cards and text are larger than the uniformly scaled reference; the lower China card lies below the normal viewport.'],
   packageProofSha256:digest(path.join(OUT,'package-proof.json')),
   captureProofSha256:digest(path.join(OUT,'screen-proof/capture.json')),
   geometryProofSha256:digest(path.join(OUT,'screen-proof/screen-geometry-proof.json')),
